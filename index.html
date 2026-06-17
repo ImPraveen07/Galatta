@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Galatta Arena | Neo-Brutalist Dashboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght=400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* =========================================
+           NEO-BRUTALISM DESIGN SYSTEM
+           ========================================= */
+        :root {
+            --bg-base: #f4f0ea;
+            --panel-bg: #ffffff;
+            --text-main: #000000;
+            --text-muted: #333333;
+            
+            /* High Contrast Accents */
+            --accent-lime: #ccff00;
+            --accent-cyan: #00e5ff;
+            --accent-purple: #b000ff;
+            --accent-red: #ff3b30;
+            
+            /* Brutalist Core Variables */
+            --border-hard: 3px solid #000000;
+            --shadow-hard: 6px 6px 0px #000000;
+            --shadow-hover: 8px 8px 0px #000000;
+            --shadow-click: 0px 0px 0px #000000;
+            
+            --radius-slight: 8px;
+            
+            --transition-snap: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+            --transition-smooth: 0.4s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Space Grotesk', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+            min-height: 100vh;
+            
+            background-image: radial-gradient(#000000 1.5px, transparent 1.5px);
+            background-size: 25px 25px;
+            background-position: 0 0;
+            background-attachment: fixed;
+        }
+
+        h1, h2, h3, h4 { font-weight: 900; text-transform: uppercase; letter-spacing: -1px; }
+
+        /* =========================================
+           REUSABLE BRUTALIST COMPONENTS
+           ========================================= */
+        .brutal-panel {
+            background: var(--panel-bg);
+            border: var(--border-hard);
+            border-radius: var(--radius-slight);
+            box-shadow: var(--shadow-hard);
+            transition: transform var(--transition-snap), box-shadow var(--transition-snap);
+        }
+        
+        .brutal-interactive:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        /* --- BUTTONS --- */
+        .brutal-btn {
+            background: var(--accent-lime);
+            color: var(--text-main);
+            border: var(--border-hard);
+            border-radius: var(--radius-slight);
+            padding: 1rem 1.5rem;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 900;
+            font-size: 1.1rem;
+            text-transform: uppercase;
+            cursor: pointer;
+            box-shadow: var(--shadow-hard);
+            transition: all var(--transition-snap);
+            display: inline-flex; justify-content: center; align-items: center; gap: 0.5rem;
+            position: relative;
+        }
+
+        .brutal-btn:hover { 
+            background: var(--accent-cyan);
+            transform: translate(-2px, -2px); 
+            box-shadow: var(--shadow-hover); 
+        }
+        
+        .brutal-btn:active { 
+            transform: translate(6px, 6px); 
+            box-shadow: var(--shadow-click); 
+        }
+
+        .btn-secondary {
+            background: var(--panel-bg);
+            color: var(--text-main);
+            border: var(--border-hard);
+            padding: 0.8rem; font-size: 0.9rem; border-radius: var(--radius-slight);
+            cursor: pointer; font-weight: 900; text-transform: uppercase;
+            box-shadow: 4px 4px 0px #000;
+            transition: all var(--transition-snap);
+        }
+        .btn-secondary:active {
+            transform: translate(4px, 4px);
+            box-shadow: 0px 0px 0px #000;
+        }
+
+        /* --- INPUTS --- */
+        .input-group { position: relative; margin-bottom: 1.5rem; text-align: left; }
+        .input-group label { display: block; font-size: 0.9rem; font-weight: 900; margin-bottom: 0.5rem; text-transform: uppercase; background: #000; color: var(--accent-lime); padding: 0.2rem 0.5rem; width: fit-content; border-radius: 4px; border: 2px solid #000;}
+        .input-group input, .input-group select {
+            width: 100%; background: var(--panel-bg); border: var(--border-hard);
+            padding: 1rem 1.25rem; border-radius: var(--radius-slight); color: var(--text-main);
+            font-family: 'Space Grotesk', sans-serif; font-size: 1.1rem; font-weight: 700;
+            box-shadow: 4px 4px 0px #000; transition: all var(--transition-smooth);
+            -webkit-appearance: none;
+        }
+        .input-group input:focus, .input-group select:focus {
+            outline: none; background: var(--accent-cyan); box-shadow: 6px 6px 0px #000; transform: translate(-2px, -2px);
+        }
+
+        .input-group input.autofill-active {
+            background: var(--accent-lime) !important;
+            box-shadow: 6px 6px 0px #000 !important;
+            transform: scale(1.01);
+        }
+
+        /* --- IMAGES --- */
+        .auth-logo {
+            width: 80px; height: 80px; border: var(--border-hard); border-radius: var(--radius-slight);
+            background: var(--panel-bg); box-shadow: 4px 4px 0px #000; margin-bottom: 1rem; object-fit: cover;
+        }
+        .brand-logo {
+            width: 35px; height: 35px; border: 2px solid #000; background: var(--panel-bg); object-fit: cover;
+        }
+
+        /* =========================================
+           LAYOUT & DASHBOARD ELEMENTS
+           ========================================= */
+        #authWrapper {
+            min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 1.5rem;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 2000;
+            background-color: var(--bg-base);
+            background-image: radial-gradient(#000000 1.5px, transparent 1.5px);
+            background-size: 25px 25px;
+            background-position: 0 0;
+            background-attachment: fixed;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+
+        .auth-card { width: 100%; max-width: 440px; padding: 3rem 2.5rem; text-align: center; }
+        
+        .auth-header { margin-bottom: 2.5rem; background: var(--accent-cyan); border: var(--border-hard); padding: 1rem; border-radius: var(--radius-slight); transform: rotate(-2deg); box-shadow: 4px 4px 0px #000;}
+        .auth-header h1 { font-size: 2.5rem; color: var(--text-main); }
+
+        #mainHub { display: none; opacity: 0; transition: opacity 0.3s ease; padding-top: 100px; }
+
+        nav {
+            position: fixed; top: 0; width: 100%; min-height: 80px; z-index: 1000;
+            display: flex; justify-content: space-between; align-items: center; padding: 0 5%;
+            background: var(--accent-purple); border-bottom: var(--border-hard); box-shadow: 0 4px 0px #000;
+            flex-wrap: wrap;
+        }
+        .brand-container { display: flex; align-items: center; gap: 1rem; cursor: pointer; background: var(--accent-lime); padding: 0.5rem 1rem; border: var(--border-hard); transform: rotate(-2deg); box-shadow: 4px 4px 0px #000; margin: 1rem 0;}
+        .brand { font-size: 1.8rem; font-weight: 900; letter-spacing: -1px; color: var(--text-main); }
+        
+        .nav-links { display: flex; gap: 2.5rem; align-items: center; flex-wrap: wrap; margin-bottom: 1rem; }
+        .nav-links a { color: #fff; text-decoration: none; font-weight: 900; font-size: 1.1rem; text-transform: uppercase; text-shadow: 2px 2px 0px #000; transition: all 0.2s; }
+        
+        @media (max-width: 768px) { 
+            nav { justify-content: center; position: relative; } 
+            .nav-links { gap: 1rem; justify-content: center; }
+            #mainHub { padding-top: 20px; }
+        }
+
+        .hub-section { max-width: 1300px; margin: 0 auto; padding: 1.5rem 5% 5rem; }
+        
+        /* --- ADMIN BOARD --- */
+        .admin-dashboard-panel {
+            padding: 1.8rem; margin-bottom: 2.5rem; display: grid; background: var(--accent-cyan);
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.8rem; position: relative;
+        }
+        .admin-header-row { grid-column: 1 / -1; }
+        .admin-stat-box { text-align: center; padding: 1.8rem; border: var(--border-hard); border-radius: var(--radius-slight); background: var(--panel-bg); box-shadow: 4px 4px 0px #000; }
+        .admin-stat-label { font-size: 0.9rem; margin-bottom: 0.5rem; font-weight: 900; text-transform: uppercase; color: var(--text-muted); }
+        .admin-stat-val { font-size: 2.8rem; font-weight: 900; color: var(--text-main); }
+        .admin-close-btn { position: absolute; top: 15px; right: 15px; background: #fff; border: var(--border-hard); border-radius: 50%; width: 35px; height: 35px; font-size: 1.5rem; font-weight: 900; cursor: pointer; color: var(--text-main); box-shadow: 2px 2px 0px #000; display:flex; align-items:center; justify-content:center;}
+
+        /* --- TABS --- */
+        .tab-controls {
+            display: flex; justify-content: center; gap: 1rem; margin: 0 auto 3rem;
+            padding: 0.75rem; border: var(--border-hard); background: var(--panel-bg); box-shadow: var(--shadow-hard); border-radius: var(--radius-slight); width: fit-content; max-width: 100%; flex-wrap: wrap;
+        }
+        .tab-btn {
+            background: transparent; border: 2px solid transparent; color: var(--text-muted);
+            font-size: 1rem; font-weight: 900; padding: 0.85rem 2.5rem; border-radius: var(--radius-slight); cursor: pointer; transition: all var(--transition-snap); text-transform: uppercase;
+        }
+        .tab-btn.active { background: var(--accent-lime); color: var(--text-main); border: var(--border-hard); box-shadow: 3px 3px 0px #000; transform: translate(-2px, -2px);}
+
+        .calculator-config-bar { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; padding: 2rem; margin-bottom: 2.5rem; }
+        @media (max-width: 768px) {
+            .calculator-config-bar { grid-template-columns: 1fr; gap: 1rem; padding: 1.5rem; }
+        }
+
+        /* --- GAME ARENA --- */
+        .game-header-grid { display: grid; grid-template-columns: 10fr 13fr; gap: 2.5rem; margin-bottom: 2.5rem; }
+        @media (max-width: 1024px) { .game-header-grid { grid-template-columns: 1fr; } }
+
+        .intel-card { padding: 2.5rem; display: flex; flex-direction: column; gap: 1.8rem; }
+        .intel-card h2 { font-size: 3.5rem; color: var(--text-main); background: var(--accent-lime); width: fit-content; padding: 0.2rem 1rem; border: var(--border-hard); box-shadow: 4px 4px 0px #000; transform: rotate(-1deg);}
+        .intel-meta { display: flex; gap: 1rem; flex-wrap: wrap; }
+        .meta-tag { padding: 0.5rem 1rem; border: var(--border-hard); border-radius: var(--radius-slight); font-size: 0.9rem; font-weight: 900; background: var(--panel-bg); color: var(--text-main); text-transform: uppercase; box-shadow: 3px 3px 0px #000; }
+
+        /* Progress Bar */
+        .room-progress-text { display: flex; justify-content: space-between; font-size: 1.1rem; margin-bottom: 0.8rem; font-weight: 900; text-transform: uppercase; color: var(--text-main); }
+        .room-progress-track { width: 100%; height: 24px; background: var(--panel-bg); border: var(--border-hard); border-radius: var(--radius-slight); overflow: hidden; box-shadow: inset 4px 4px 0px rgba(0,0,0,0.1); }
+        .room-progress-bar { width: 0%; height: 100%; background: var(--accent-purple); border-right: var(--border-hard); transition: width 0.8s cubic-bezier(0.2, 1, 0.2, 1); }
+
+        /* Prize Matrix - 2 COLUMNS */
+        .prize-matrix { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.5rem; margin-top: 1rem; }
+        @media (max-width: 768px) {
+            .prize-matrix { grid-template-columns: 1fr; gap: 1rem; }
+        }
+        
+        .prize-rank-card { border: var(--border-hard); border-radius: var(--radius-slight); padding: 1.5rem; text-align: center; background: var(--panel-bg); box-shadow: 4px 4px 0px #000; }
+        .prize-rank-card:nth-child(1) { background: var(--accent-lime); }
+        .rank-lbl { font-size: 0.9rem; color: var(--text-main); margin-bottom: 0.5rem; font-weight: 900; text-transform: uppercase; border-bottom: 2px solid #000; padding-bottom: 0.2rem;}
+        .rank-val { font-size: 2rem; font-weight: 900; color: var(--text-main); margin-top: 0.5rem;}
+
+        /* Brackets */
+        .bracket-wrapper { overflow-x: auto; padding: 2.5rem; display: flex; align-items: center; cursor: grab; background: var(--accent-cyan); -webkit-overflow-scrolling: touch;}
+        .bracket-container { display: flex; min-width: 680px; gap: 3rem; width: 100%; justify-content: space-between; }
+        .round { display: flex; flex-direction: column; gap: 3rem; flex: 1; }
+        .round-title { font-size: 1.2rem; font-weight: 900; text-transform: uppercase; margin-bottom: 1.5rem; text-align: center; color: var(--text-main); background: #fff; border: var(--border-hard); padding: 0.5rem; box-shadow: 3px 3px 0px #000;}
+        
+        .match { border: var(--border-hard); border-radius: var(--radius-slight); background: var(--panel-bg); box-shadow: 6px 6px 0px #000; overflow: hidden; }
+        .competitor { display: flex; justify-content: space-between; padding: 1.2rem 1.5rem; font-weight: 900; font-size: 1.1rem; color: var(--text-main); }
+        .competitor:first-child { border-bottom: var(--border-hard); }
+        .competitor.winner { background: var(--accent-lime); }
+
+        /* --- MODULES --- */
+        .feature-showcase-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; margin-top: 2.5rem; }
+        @media(max-width: 900px) { .feature-showcase-grid { grid-template-columns: 1fr; } }
+        .module-card { padding: 2.5rem; }
+        .module-card h4 { font-size: 1.6rem; margin-bottom: 1.8rem; color: var(--text-main); text-transform: uppercase; text-decoration: underline; text-decoration-thickness: 3px;}
+        
+        .search-box { width: 50%; }
+        @media(max-width: 600px) { .search-box { width: 100%; } }
+        
+        .player-scroller { max-height: 250px; overflow-y: auto; display: flex; flex-direction: column; gap: 1rem; padding-right: 0.5rem; padding-top: 0.5rem; }
+        .player-row-item { display: flex; justify-content: space-between; padding: 1.2rem 1.5rem; border: var(--border-hard); border-radius: var(--radius-slight); background: var(--panel-bg); box-shadow: 4px 4px 0px #000; font-weight: 900; color: var(--text-main); transition: transform 0.1s ease; }
+        .player-row-item:hover { transform: translate(-2px, -2px); background: var(--accent-lime); box-shadow: 6px 6px 0px #000; }
+
+        .timeline-container { display: flex; flex-direction: column; gap: 1.5rem; padding-top: 0.5rem; }
+        .timeline-card { padding: 1.5rem; background: var(--panel-bg); border: var(--border-hard); border-radius: var(--radius-slight); box-shadow: 6px 6px 0px #000; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;}
+        .timeline-card strong { color: var(--text-main); font-size: 1.2rem; text-transform: uppercase;}
+
+        /* --- MODALS & TOASTS --- */
+        .modal-overlay { position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0, 0, 0, 0.7); backdrop-filter: blur(4px); z-index: 3000; display: none; justify-content: center; align-items: center; padding: 1.5rem; opacity: 0; transition: opacity 0.2s ease; }
+        .modal-body { width: 100%; max-width: 450px; padding: 3rem; transform: scale(0.95); transition: all 0.2s ease; position: relative; }
+        .modal-overlay.open { opacity: 1; }
+        .modal-overlay.open .modal-body { transform: scale(1); }
+        
+        #toastContainer { position: fixed; bottom: 30px; right: 30px; z-index: 4000; display: flex; flex-direction: column; gap: 1rem; pointer-events: none; }
+        .toast-banner { background: var(--accent-lime); color: var(--text-main); border: var(--border-hard); border-radius: var(--radius-slight); padding: 1.2rem 1.8rem; font-weight: 900; font-size: 1.2rem; text-transform: uppercase; box-shadow: 6px 6px 0px #000; transform: translateX(50px); opacity: 0; animation: toastIn 0.3s cubic-bezier(0.4, 0, 0.2, 1) forwards; }
+        @keyframes toastIn { to { transform: translateX(0); opacity: 1; } }
+
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: var(--panel-bg); border-left: var(--border-hard); }
+        ::-webkit-scrollbar-thumb { background: var(--accent-purple); border: 2px solid #000; }
+    </style>
+</head>
+<body>
+
+    <div id="authWrapper">
+        <div class="brutal-panel auth-card">
+            <div class="auth-header">
+                <img src="galatta1.png" alt="Galatta Arena System" class="auth-logo" onerror="this.style.display='none'">
+                <h1>GALATTA ARENA</h1>
+            </div>
+            <p style="font-weight: 900; margin-bottom: 2rem; font-size: 1.1rem; text-transform: uppercase; background: #000; color: #fff; padding: 0.5rem; transform: rotate(1deg);">System Identification</p>
+            
+            <div id="authFormFields">
+                <div class="input-group">
+                    <label>Player Handle</label>
+                    <input type="text" id="usernameField" placeholder="Enter your identity" onkeydown="handleKeyEntry(event)">
+                </div>
+                <div class="input-group">
+                    <label>Security Passcode</label>
+                    <input type="password" id="passwordField" placeholder="••••••••" onkeydown="handleKeyEntry(event)">
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 1.25rem; margin-top: 2.5rem;">
+                    <button type="button" class="brutal-btn" id="submitBtn" onclick="executeLogin()">ENTER TOURNAMENT</button>
+                    <button type="button" class="btn-secondary" id="autofillBtn" onclick="triggerAutoFill()">RUN AUTO-FILL</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="mainHub">
+        <nav>
+            <div class="brand-container">
+                <img src="galatta1.png" alt="Logo" class="brand-logo" onerror="this.style.display='none'">
+                <div class="brand">GALATTA.</div>
+            </div>
+            <div class="nav-links">
+                <a href="#" class="active">Tournament Hub</a>
+                <a href="#">Rankings</a>
+                <button class="brutal-btn" style="padding: 0.6rem 1.2rem; font-size: 0.9rem;" onclick="logout()">DISCONNECT</button>
+            </div>
+        </nav>
+
+        <section class="hub-section">
+            <div class="brutal-panel admin-dashboard-panel" id="adminPanelBlock">
+                <button class="admin-close-btn" onclick="destroyAdminPanel()">&times;</button>
+                <div class="admin-header-row">
+                    <h3 style="background: #000; color: var(--accent-lime); padding: 0.5rem 1rem; display: inline-block; border-radius: 4px;">ADMIN PROFILE: EARNINGS</h3>
+                </div>
+                <div class="admin-stat-box">
+                    <div class="admin-stat-label">System Allocation (Admin Profit)</div>
+                    <div class="admin-stat-val" id="adminProfitLabel">₹0</div>
+                </div>
+                <div class="admin-stat-box">
+                    <div class="admin-stat-label">Gross Collection</div>
+                    <div class="admin-stat-val" id="adminGrossLabel">₹0</div>
+                </div>
+                <div class="admin-stat-box">
+                    <div class="admin-stat-label">Net Prize Pool</div>
+                    <div class="admin-stat-val" id="adminPoolLabel">₹0</div>
+                </div>
+            </div>
+
+            <div class="tab-controls">
+                <button class="tab-btn active" id="btn-tab-bgmi" onclick="switchTab('bgmi')">BGMI</button>
+                <button class="tab-btn" id="btn-tab-efootball" onclick="switchTab('efootball')">eFootball</button>
+                <button class="tab-btn" id="btn-tab-freefire" onclick="switchTab('freefire')">Free Fire</button>
+            </div>
+
+            <div class="brutal-panel calculator-config-bar brutal-interactive">
+                <div class="input-group" style="margin-bottom:0;">
+                    <label>Select Bracket Size</label>
+                    <select id="slotConfigSelector" onchange="runLiveCalculations()"></select>
+                </div>
+                <div class="input-group" style="margin-bottom:0;">
+                    <label>Entry Authorization Fee</label>
+                    <select id="feeConfigSelector" onchange="runLiveCalculations()">
+                        <option value="50">₹50 (Standard Core)</option>
+                        <option value="100">₹100 (Pro Circuit)</option>
+                        <option value="500">₹500 (Elite Series)</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="game-header-grid">
+                <div class="brutal-panel intel-card brutal-interactive">
+                    <h2 id="activeGameTitle">BGMI SOLO</h2>
+                    <div class="intel-meta" id="activeMetaTags"></div>
+                    
+                    <div style="margin: 1.5rem 0;">
+                        <div class="room-progress-text">
+                            <span style="background: #000; color:#fff; padding: 0.2rem 0.5rem;">Lobby Occupancy</span>
+                            <span id="progressPercentLabel" style="color: var(--text-main); font-size: 1.5rem;">0%</span>
+                        </div>
+                        <div class="room-progress-track">
+                            <div class="room-progress-bar" id="progressBarFill"></div>
+                        </div>
+                    </div>
+
+                    <div class="prize-matrix">
+                        <div class="prize-rank-card">
+                            <div class="rank-lbl">Champion (1st)</div>
+                            <div class="rank-val" id="rankVal1">₹0</div>
+                        </div>
+                        <div class="prize-rank-card">
+                            <div class="rank-lbl">Runner Up (2nd)</div>
+                            <div class="rank-val" id="rankVal2">₹0</div>
+                        </div>
+                    </div>
+
+                    <button class="brutal-btn" style="margin-top: 1.5rem; width: 100%; padding: 1.25rem;" onclick="openModalElement('registrationModalWindow')">SECURE TOURNAMENT SLOT</button>
+                </div>
+                
+                <div class="brutal-panel bracket-wrapper brutal-interactive" id="bracketSliderDeck">
+                    <div class="bracket-container" id="bracketDynamicInject"></div>
+                </div>
+            </div>
+
+            <div class="feature-showcase-grid">
+                <div class="brutal-panel module-card brutal-interactive">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem; flex-wrap: wrap; gap: 1rem;">
+                        <h4>Active Roster</h4>
+                        <div class="input-group search-box" style="margin:0;">
+                            <input type="text" placeholder="Search handles..." oninput="filterPlayers(this.value)" style="padding: 0.8rem 1.2rem;">
+                        </div>
+                    </div>
+                    <div class="player-scroller" id="lobbyPlayerBox"></div>
+                </div>
+
+                <div class="brutal-panel module-card brutal-interactive">
+                    <h4>Deployment Schedule</h4>
+                    <div class="timeline-container" id="timelineListDeck"></div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="modal-overlay" id="registrationModalWindow">
+        <div class="brutal-panel modal-body">
+            <button class="admin-close-btn" onclick="closeModalElement('registrationModalWindow')" style="top: -15px; right: -15px;">&times;</button>
+            <h3 style="margin-bottom: 2rem; font-size: 2rem; color: var(--text-main); background: var(--accent-lime); display: inline-block; padding: 0.5rem 1rem; border: var(--border-hard); box-shadow: 4px 4px 0px #000; transform: rotate(-2deg);">AUTHORIZE ENTRY</h3>
+            <form onsubmit="submitRegistration(event)" style="margin-top: 1rem;">
+                <div class="input-group">
+                    <label>Galatta Character ID</label>
+                    <input type="text" id="modalRegName" placeholder="e.g. GhostOperator" required>
+                </div>
+                <button type="submit" class="brutal-btn" style="width: 100%; margin-top: 1.5rem;">CONFIRM REGISTRATION</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="toastContainer"></div>
+
+    <script>
+        let currentActiveTab = 'bgmi';
+        
+        const gameData = {
+            bgmi: { title: 'BGMI SOLO ARENA', slots: [16, 32, 64, 100], tags: ['TPP', 'Erangel', 'Mobile Device'], times: ['04:30 PM IST', '08:00 PM IST'] },
+            efootball: { title: 'EFOOTBALL CLASH', slots: [4, 8, 16, 32], tags: ['PvP Strategy', '6 Min Match'], times: ['05:00 PM IST', '09:30 PM IST'] },
+            freefire: { title: 'FREE FIRE BURST', slots: [12, 24, 48, 50], tags: ['Squad/Solo', 'Bermuda'], times: ['02:00 PM IST', '07:00 PM IST'] }
+        };
+
+        const staticPlayers = ['ViperStrike', 'ToxicVenom', 'NoobMaster69', 'GodlikeMortal', 'ShadowNinja', 'SoulCrusher', 'DragonSlayer', 'GhostSniper', 'AlphaWolf', 'NeonRider', 'CyberPunk2077', 'DarkKnight'];
+
+        function showToastMessage(msg) {
+            const tc = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast-banner';
+            toast.innerText = msg;
+            tc.appendChild(toast);
+            setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(50px)'; setTimeout(() => toast.remove(), 300); }, 3500);
+        }
+
+        function handleKeyEntry(e) { if(e.key === 'Enter') executeLogin(); }
+        function triggerAutoFill() {
+            const u = document.getElementById('usernameField');
+            const p = document.getElementById('passwordField');
+            u.value = 'Admin_Praveen'; p.value = 'HACKER_MODE_99';
+            u.classList.add('autofill-active'); p.classList.add('autofill-active');
+            showToastMessage('Credentials Injected');
+            setTimeout(() => { u.classList.remove('autofill-active'); p.classList.remove('autofill-active'); }, 500);
+        }
+
+        function executeLogin() {
+            const u = document.getElementById('usernameField').value.trim();
+            const p = document.getElementById('passwordField').value.trim();
+            if(!u || !p) return showToastMessage('System Error: Missing Credentials');
+            
+            document.getElementById('authWrapper').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('authWrapper').style.display = 'none';
+                document.getElementById('mainHub').style.display = 'block';
+                setTimeout(() => document.getElementById('mainHub').style.opacity = '1', 50);
+                buildUIBase();
+                showToastMessage(`Access Granted: ${u}`);
+            }, 300);
+        }
+
+        function logout() {
+            document.getElementById('mainHub').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('mainHub').style.display = 'none';
+                document.getElementById('authWrapper').style.display = 'flex';
+                document.getElementById('usernameField').value = '';
+                document.getElementById('passwordField').value = '';
+                setTimeout(() => document.getElementById('authWrapper').style.opacity = '1', 50);
+                showToastMessage('Connection Terminated');
+            }, 300);
+        }
+
+        function destroyAdminPanel() {
+            const panel = document.getElementById('adminPanelBlock');
+            if(panel) {
+                panel.style.transform = 'scale(0.9)';
+                panel.style.opacity = '0';
+                setTimeout(() => panel.remove(), 200);
+            }
+        }
+
+        function switchTab(game) {
+            currentActiveTab = game;
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(`btn-tab-${game}`).classList.add('active');
+            buildUIBase();
+        }
+
+        function buildUIBase() {
+            const data = gameData[currentActiveTab];
+            document.getElementById('activeGameTitle').innerText = data.title;
+            document.getElementById('activeMetaTags').innerHTML = data.tags.map(t => `<span class="meta-tag">${t}</span>`).join('');
+            
+            const sel = document.getElementById('slotConfigSelector');
+            sel.innerHTML = data.slots.map(s => `<option value="${s}">${s} Battle Slots</option>`).join('');
+            
+            const timeline = document.getElementById('timelineListDeck');
+            timeline.innerHTML = data.times.map((t, i) => `
+                <div class="timeline-card">
+                    <strong>PHASE 0${i+1}</strong>
+                    <span style="font-weight:700; background:var(--accent-lime); padding:0.2rem 0.5rem; border:2px solid #000;">${t}</span>
+                </div>
+            `).join('');
+
+            runLiveCalculations();
+            populateLobby();
+        }
+
+        // ==========================================
+        // 5:3:2 RATIO PRIZE CALCULATION LOGIC
+        // ==========================================
+        function runLiveCalculations() {
+            const slotSel = document.getElementById('slotConfigSelector');
+            if(!slotSel) return;
+            const slots = parseInt(slotSel.value);
+            const fee = parseInt(document.getElementById('feeConfigSelector').value);
+            const gross = slots * fee;
+            
+            // Helper function to round to nearest 50 for clean display numbers
+            const getNiceNum = (val) => {
+                if (val === 0) return 0;
+                let rounded = Math.round(val / 50) * 50;
+                return rounded === 0 ? val : rounded; 
+            };
+
+            // EXACT RATIO: 50% (1st) : 30% (2nd)
+            let firstPrize = getNiceNum(gross * 0.50);
+            let secondPrize = getNiceNum(gross * 0.30);
+            let totalPrizePool = firstPrize + secondPrize;
+
+            // Failsafe: if rounding makes prizes larger than expected, adjust safely
+            if (totalPrizePool >= gross) {
+                firstPrize = Math.floor(gross * 0.5);
+                secondPrize = Math.floor(gross * 0.3);
+                totalPrizePool = firstPrize + secondPrize;
+            }
+
+            // EXACT RATIO (Admin ~20%): Admin takes the remaining cut to balance the equation
+            let adminProfit = gross - totalPrizePool;
+
+            if(document.getElementById('adminPanelBlock')) {
+                document.getElementById('adminProfitLabel').innerText = `₹${adminProfit}`;
+                document.getElementById('adminGrossLabel').innerText = `₹${gross}`;
+                document.getElementById('adminPoolLabel').innerText = `₹${totalPrizePool}`;
+            }
+
+            document.getElementById('rankVal1').innerText = `₹${firstPrize}`;
+            document.getElementById('rankVal2').innerText = `₹${secondPrize}`;
+
+            // Random Lobby Progress
+            const fill = Math.floor(Math.random() * 80) + 15;
+            document.getElementById('progressBarFill').style.width = fill + '%';
+            document.getElementById('progressPercentLabel').innerText = fill + '%';
+
+            generateBracketVisual(slots);
+        }
+
+        function populateLobby() {
+            const box = document.getElementById('lobbyPlayerBox');
+            const limit = Math.floor(Math.random() * 8) + 4;
+            const roster = staticPlayers.sort(() => 0.5 - Math.random()).slice(0, limit);
+            box.innerHTML = roster.map(p => `
+                <div class="player-row-item">
+                    <span>${p}</span>
+                    <span style="color:var(--text-muted); font-size:0.8rem;">READY</span>
+                </div>
+            `).join('');
+        }
+
+        function filterPlayers(query) {
+            const rows = document.querySelectorAll('.player-row-item');
+            rows.forEach(r => {
+                const text = r.innerText.toLowerCase();
+                r.style.display = text.includes(query.toLowerCase()) ? 'flex' : 'none';
+            });
+        }
+
+        function generateBracketVisual(slots) {
+            const rounds = Math.floor(Math.log2(slots > 8 ? 8 : slots)) || 1;
+            const container = document.getElementById('bracketDynamicInject');
+            let html = '';
+            let matches = 4;
+            
+            for(let r=1; r<=rounds; r++) {
+                html += `<div class="round"><div class="round-title">Elimination ${r}</div>`;
+                for(let m=0; m<matches; m++) {
+                    const win1 = Math.random() > 0.5;
+                    html += `
+                        <div class="match">
+                            <div class="competitor ${win1 ? 'winner' : ''}">${win1 ? 'Player' : 'TBD'}</div>
+                            <div class="competitor ${!win1 ? 'winner' : ''}">${!win1 ? 'Player' : 'TBD'}</div>
+                        </div>
+                    `;
+                }
+                html += `</div>`;
+                matches = Math.max(1, matches/2);
+            }
+            container.innerHTML = html;
+        }
+
+        function openModalElement(id) {
+            const m = document.getElementById(id);
+            m.style.display = 'flex';
+            setTimeout(() => m.classList.add('open'), 10);
+            document.getElementById('modalRegName').focus();
+        }
+
+        function closeModalElement(id) {
+            const m = document.getElementById(id);
+            m.classList.remove('open');
+            setTimeout(() => m.style.display = 'none', 200);
+        }
+
+        function submitRegistration(e) {
+            e.preventDefault();
+            const val = document.getElementById('modalRegName').value.trim();
+            closeModalElement('registrationModalWindow');
+            document.getElementById('modalRegName').value = '';
+            showToastMessage(`Slot Confirmed: ${val}`);
+            setTimeout(() => {
+                const box = document.getElementById('lobbyPlayerBox');
+                const p = document.createElement('div');
+                p.className = 'player-row-item';
+                p.innerHTML = `<span>${val}</span><span style="color:var(--accent-purple); font-size:0.8rem;">NEW ENTRY</span>`;
+                box.prepend(p);
+                
+                const pb = document.getElementById('progressBarFill');
+                let cur = parseInt(pb.style.width) || 0;
+                if(cur < 100) {
+                    cur = Math.min(100, cur + 5);
+                    pb.style.width = cur + '%';
+                    document.getElementById('progressPercentLabel').innerText = cur + '%';
+                }
+            }, 600);
+        }
+    </script>
+</body>
+</html>
